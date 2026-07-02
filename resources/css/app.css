@@ -1,0 +1,199 @@
+@import 'tailwindcss';
+
+@source '../views';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+
+@theme {
+    --font-sans: 'Gabarito', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--neutral-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-default);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gray);
+}
+
+html.dark ::-webkit-scrollbar-track {
+    background: var(--neutral-primary);
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+    background: var(--neutral-quaternary);
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+    background: var(--gray);
+}
+
+:root {
+    /* ── Neutral Backgrounds ── */
+    --neutral-primary-soft: #FFFFFF;
+    --neutral-primary: #FFFFFF;
+    --neutral-primary-medium: #FFFFFF;
+    --neutral-primary-strong: #FFFFFF;
+    --neutral-secondary-soft: #FAFAFF;
+    --neutral-secondary: #FAFAFF;
+    --neutral-secondary-medium: #FAFAFF;
+    --neutral-secondary-strong: #FAFAFF;
+    --neutral-tertiary-soft: #F2F0FA;
+    --neutral-tertiary: #F2F0FA;
+    --neutral-tertiary-medium: #F2F0FA;
+    --neutral-quaternary: #E5E1F5;
+    --quaternary-medium: #E5E1F5;
+    --gray: #D0CCE3;
+
+    /* ── Brand Backgrounds ── */
+    --brand-softer: #F0EBFF;
+    --brand-soft: #DDD4FF;
+    --brand: #6733FF;
+    --brand-medium: #C4B0FF;
+    --brand-strong: #5229CC;
+
+    /* ── Status Backgrounds ── */
+    --success-soft: #E6FFF5;
+    --success: #00CC88;
+    --success-medium: #B8FFE0;
+    --success-strong: #00A86B;
+    --danger-soft: #FFF0F0;
+    --danger: #EC4747;
+    --danger-medium: #FFDADA;
+    --danger-strong: #D43030;
+    --warning-soft: #FFF5EB;
+    --warning: #FF8C42;
+    --warning-medium: #FFE0C4;
+    --warning-strong: #E86B14;
+
+    /* ── Utility ── */
+    --dark: #1A1A3E;
+    --dark-strong: #0F0F2E;
+    --disabled: #F2F0FA;
+
+    /* ── Text Colors ── */
+    --white: #FFFFFF;
+    --black: #0F0F2E;
+    --heading: #0F0F2E;
+    --body: #4A4566;
+    --body-subtle: #5A5470;
+    --on-brand: #FFFFFF;
+    --on-brand-muted: #F0EBFF;
+    --fg-brand-subtle: #C4B0FF;
+    --fg-brand: #6733FF;
+    --fg-brand-strong: #5229CC;
+    --fg-success: #00A86B;
+    --fg-success-strong: #004F3B;
+    --fg-danger: #EC4747;
+    --fg-danger-strong: #D43030;
+    --fg-warning-subtle: #FF8C42;
+    --fg-warning: #CC5500;
+    --fg-disabled: #A8A3C0;
+
+    /* ── Border Colors ── */
+    --border-buffer: #FFFFFF;
+    --border-buffer-medium: #FFFFFF;
+    --border-buffer-strong: #FFFFFF;
+    --border-muted: #FAFAFF;
+    --border-light-subtle: #F2F0FA;
+    --border-light: #F2F0FA;
+    --border-light-medium: #F2F0FA;
+    --border-default-subtle: #E5E1F5;
+    --border-default: #E5E1F5;
+    --border-default-medium: #E5E1F5;
+    --border-default-strong: #E5E1F5;
+    --border-success-subtle: #80FFCC;
+    --border-success: #00A86B;
+    --border-danger-subtle: #FFB8B8;
+    --border-danger: #EC4747;
+    --border-warning-subtle: #FFD4A8;
+    --border-warning: #FF8C42;
+    --border-brand-subtle: #C4B0FF;
+    --border-brand-light: #7C4DFF;
+    --border-brand: #6733FF;
+    --border-dark-subtle: #1A1A3E;
+}
+
+html.dark {
+    --neutral-primary-soft: #0F1024;
+    --neutral-primary: #08091A;
+    --neutral-primary-medium: #181A33;
+    --neutral-primary-strong: #262845;
+    --neutral-secondary-soft: #0F1024;
+    --neutral-secondary: #08091A;
+    --neutral-secondary-medium: #181A33;
+    --neutral-secondary-strong: #262845;
+    --neutral-tertiary-soft: #0F1024;
+    --neutral-tertiary: #181A33;
+    --neutral-tertiary-medium: #262845;
+    --neutral-quaternary: #353859;
+    --quaternary-medium: #353859;
+    --gray: #353859;
+
+    --brand-softer: #1A0D4D;
+    --brand-soft: #2D1A80;
+    --brand: #7C4DFF;
+    --brand-medium: #2D1A80;
+    --brand-strong: #6733FF;
+
+    --success-soft: #002E22;
+    --success-medium: #004F3B;
+    --danger-soft: #4D0A0A;
+    --danger-medium: #6B1A1A;
+    --warning-soft: #7C2D12;
+    --warning-medium: #7C2D12;
+
+    --dark: #1A1A3E;
+    --dark-strong: #2A2A55;
+    --disabled: #181A33;
+
+    --white: #FFFFFF;
+    --black: #0F0F2E;
+    --heading: #FFFFFF;
+    --body: #A8A3C0;
+    --body-subtle: #A8A3C0;
+    --fg-brand-subtle: #2D1A80;
+    --fg-brand: #A78BFF;
+    --fg-brand-strong: #C4B0FF;
+    --fg-success: #004F3B;
+    --fg-success-strong: #00CC88;
+    --fg-danger: #FF6B6B;
+    --fg-danger-strong: #FF8F8F;
+    --fg-warning: #FFD166;
+    --fg-disabled: #5A5575;
+
+    --border-buffer: #08091A;
+    --border-buffer-medium: #181A33;
+    --border-buffer-strong: #262845;
+    --border-muted: #0F1024;
+    --border-light-subtle: #0F1024;
+    --border-light: #181A33;
+    --border-light-medium: #262845;
+    --border-default-subtle: #0F1024;
+    --border-default: #181A33;
+    --border-default-medium: #262845;
+    --border-default-strong: #353859;
+    --border-success-subtle: #004F3B;
+    --border-success: #004F3B;
+    --border-danger-subtle: #6B1A1A;
+    --border-danger: #EC4747;
+    --border-warning-subtle: #7C2D12;
+    --border-warning: #FF8C42;
+    --border-brand-subtle: #2D1A80;
+    --border-brand-light: #7C4DFF;
+    --border-brand: #A78BFF;
+    --border-dark-subtle: #2A2A55;
+}
