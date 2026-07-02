@@ -7,9 +7,7 @@ interface SectionProps {
 
 export default function Section({ children, className = '' }: SectionProps) {
     return (
-        <section
-            className={`bg-[var(--brand)] py-24 ${className}`}
-        >
+        <section className={`bg-[var(--brand)] py-24 ${className}`}>
             {children}
         </section>
     );

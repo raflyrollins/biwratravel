@@ -337,7 +337,7 @@ export default function Welcome() {
 
             {/* ── Parallax ── */}
             <section
-                className="relative h-[500px] bg-fixed bg-cover bg-center overflow-hidden"
+                className="relative h-[500px] overflow-hidden bg-cover bg-fixed bg-center"
                 style={{
                     backgroundImage: `url(${PARALLAX_IMG})`,
                 }}

@@ -11,8 +11,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
     white: 'bg-white text-[var(--fg-brand)] hover:bg-[var(--neutral-tertiary)]',
-    brand:
-        'bg-[var(--brand)] text-[var(--on-brand)] hover:bg-[var(--brand-strong)]',
+    brand: 'bg-[var(--brand)] text-[var(--on-brand)] hover:bg-[var(--brand-strong)]',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
@@ -29,7 +28,7 @@ export default function Button({
 }: ButtonProps) {
     return (
         <button
-            className={`inline-flex items-center justify-center gap-2 font-medium leading-none no-underline transition-[background-color] duration-150 ${variantStyles[variant]} ${sizeStyles[size]} ${disabled ? 'cursor-not-allowed opacity-50 text-[var(--fg-disabled)]' : 'cursor-pointer'} ${className}`}
+            className={`inline-flex items-center justify-center gap-2 leading-none font-medium no-underline transition-[background-color] duration-150 ${variantStyles[variant]} ${sizeStyles[size]} ${disabled ? 'cursor-not-allowed text-[var(--fg-disabled)] opacity-50' : 'cursor-pointer'} ${className}`}
             disabled={disabled}
             {...props}
         />

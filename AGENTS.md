@@ -26,6 +26,48 @@ PHP CS fixer: Pint (Laravel preset). JS formatter: Prettier + Tailwind plugin. J
 - **No domain models exist yet** — only default Laravel users/cache/jobs migrations
 - **DB**: MySQL (local, `biwratravel` DB), SQLite (`:memory:` in tests via phpunit.xml)
 
+## Architecture
+
+- **Entrypoint**: `routes/web.php` + `resources/js/app.tsx`
+- **Frontend pages**: `resources/js/pages/`
+- **Backend**: `app/Http/Controllers/`, `app/Models/`
+- **Path alias**: `@/*` → `resources/js/*`
+- **DB**: MySQL (local, `biwratravel` DB), SQLite (`:memory:` in tests via phpunit.xml)
+
+## Models
+
+| Model | Table | Key Relationships |
+|---|---|---|
+| `User` | `users` | Has role enum (`UserRole`): superadmin, admin_penjualan, admin_charter, driver, petugas_loket, customer |
+| `City` | `cities` | - |
+| `Bus` | `buses` | HasMany Route, HasMany Trip |
+| `Route` | `routes` | BelongsTo Bus, HasMany Segment, HasMany Trip |
+| `Segment` | `segments` | BelongsTo Route (ordered by `order`), mileage & pricing unit |
+| `Trip` | `trips` | BelongsTo Route + Bus, HasMany Booking |
+| `Booking` | `bookings` | BelongsTo Trip + User, HasMany Payment + BookingPassenger |
+| `Payment` | `payments` | BelongsTo Booking (N attempts per booking), validated_by admin |
+| `BookingPassenger` | `booking_passengers` | BelongsTo Booking, NIK-based passenger identity |
+| `Charter` | `charters` | Separate flow from regular tickets, multi-stage status |
+
+## Dashboard
+
+| Route | Page | Access |
+|---|---|---|
+| `/dashboard` | `dashboard/Index` | All auth roles (stats per role) |
+| `/dashboard/cities` | `dashboard/cities/{Index,Form}` | Superadmin |
+| `/dashboard/buses` | `dashboard/buses/{Index,Form}` | Superadmin |
+| `/dashboard/routes` | `dashboard/routes/{Index,Form}` | Superadmin |
+| `/dashboard/trips` | `dashboard/trips/{Index,Form}` | Superadmin |
+
+### Sidebar role-based menu filtering
+
+- **superadmin**: Umum, Master Data, Transaksi, Lainnya
+- **admin_penjualan**: Umum, Transaksi
+- **admin_charter**: Umum
+- **driver**: Umum
+- **petugas_loket**: Umum, Transaksi
+- **customer**: Umum
+
 ## Design System
 
 Read `DESIGN.md` before any UI work. Key constraints:
@@ -67,7 +109,7 @@ Workflows: `lint.yml` (push/PR to develop/main/master) + `tests.yml` (matrix PHP
 
 ## Build Session (Jul 2026)
 
-### Pages built
+### Pages built — Session 1
 
 | File | What |
 |---|---|
@@ -84,13 +126,31 @@ Workflows: `lint.yml` (push/PR to develop/main/master) + `tests.yml` (matrix PHP
 | `routes/auth.php` | Auth routes (guest/auth middleware) |
 | `tests/Feature/AuthTest.php` | Pest feature tests for auth |
 
-### Design decisions
+### Pages built — Session 2
 
-- **Hero**: single static image, no rotation, no parallax. Content fades in with framer-motion on mount.
-- **Gallery**: placed between Features and Parallax. Auto-rotates every 4s, prev/next arrows, dot navigation. Uses `AnimatePresence` for crossfade.
-- **Parallax section ("Setiap Perjalanan Punya Cerita")**: uses CSS `background-attachment: fixed` (`bg-fixed` Tailwind class). No JS. Background stays fixed while content scrolls normally. Falls back to normal scroll on iOS Safari (known `bg-fixed` limitation).
-- **Password visibility**: Eye/EyeOff icons on both password and password confirmation fields, separate toggle state per field.
-- **Page titles**: Dynamic via `app.tsx` title callback → `"Title - Biwratravel"`. Welcome: "Selamat Datang - Biwratravel", Login: "Masuk - Biwratravel", Register: "Daftar - Biwratravel".
+| File | What |
+|---|---|
+| `app/Enums/UserRole.php` | Backed string enum: superadmin, admin_penjualan, admin_charter, driver, petugas_loket, customer |
+| `app/Models/User.php` | Updated with `UserRole` cast + `hasRole()`/`isSuperadmin()` methods |
+| `database/migrations/..._add_role_to_users_table.php` | Adds `role` string column to users |
+| `app/Models/{City,Bus,Route,Segment,Trip,Booking,Payment,BookingPassenger,Charter}.php` | Full domain models with relationships |
+| `database/migrations/..._create_{cities,buses,routes,segments,trips,bookings,payments,booking_passengers,charters}_table.php` | All domain tables |
+| `database/seeders/DatabaseSeeder.php` | 6 role-based accounts + 8 cities + 2 buses + 2 routes + 6 segments |
+| `app/Http/Controllers/{Dashboard,City,Bus,Route,Trip}Controller.php` | Dashboard stats (per role) + CRUD controllers |
+| `routes/web.php` | Updated with `/dashboard/*` route group (auth middleware) |
+| `resources/js/components/DashboardLayout.tsx` | Dashboard shell with header + sidebar + mobile toggle |
+| `resources/js/components/Sidebar.tsx` | Role-filtered sidebar menus, active link highlighting |
+| `resources/js/components/DatePicker.tsx` | Custom calendar datepicker with month nav, today highlight, theme tokens |
+| `resources/js/pages/dashboard/Index.tsx` | Dashboard home with stats cards per role |
+| `resources/js/pages/dashboard/{cities,buses,routes,trips}/{Index,Form}.tsx` | CRUD pages: list + create/edit (with segments for routes) |
+
+### Design decisions (Session 2)
+
+- **Role enum**: PHP 8.4 native backed string enum, casts automatically via Laravel.
+- **Sidebar menus**: Defined centrally in `ALL_MENUS` groups, filtered by `ROLE_MENUS[role]` mapping. Active link detected by `url.startsWith(href)`.
+- **Datepicker**: Zero-radius design tokens, month/year navigation, today highlight, selected highlight in brand color. Month picker (no year dropdown for simplicity).
+- **Dashboard stats**: Each role sees different stats cards (superadmin → totals, admin_penjualan → pending payments, etc.).
+- **Route form**: Dynamic segment rows with add/remove, auto-assigns `bus_id` from selected route on trip form.
 
 ### Config changes
 
@@ -109,7 +169,11 @@ Workflows: `lint.yml` (push/PR to develop/main/master) + `tests.yml` (matrix PHP
 2. **AnimatePresence routing**: `AnimatePresence` was outside `<Routes>` → moved inside so exit animations work on route change.
 3. **Form scroll**: Added `window.scrollTo(0, 0)` on mount to reset scroll position on auth page load.
 4. **Dark/light tokens**: Removed invalid `var(--canvas)` reference, mapped to `neutral-primary` / `neutral-secondary-soft`.
+5. **Sidebar type error**: `usePage()` returns `url` at top level, not in `props` — destructured separately.
+6. **Sidebar useMemo deps**: `allowedGroups` moved inside the memo callback to prevent re-render loops.
 
 ### Known issues
 
 - `bg-fixed` (`background-attachment: fixed`) ignored on iOS Safari; falls back to normal scroll. This is a WebKit limitation — no workaround without JS-based parallax.
+- Seeder account passwords all use `password` (from UserFactory default hash).
+- PHPStan times out in some environments (level 7 on M1/WSL2).

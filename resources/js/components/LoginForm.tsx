@@ -75,7 +75,9 @@ export default function LoginForm({ onSwitchMode }: LoginFormProps) {
                             id="login-password"
                             type={showPassword ? 'text' : 'password'}
                             value={data.password}
-                            onChange={(e) => setData('password', e.target.value)}
+                            onChange={(e) =>
+                                setData('password', e.target.value)
+                            }
                             className={`block w-full border bg-[var(--neutral-tertiary)] px-4 py-3 pr-11 text-sm text-[var(--heading)] placeholder-[var(--body-subtle)] transition-all duration-200 focus:outline-none dark:bg-white/10 ${
                                 errors.password
                                     ? 'border-[var(--danger)] ring-1 ring-[var(--danger)]'
@@ -86,11 +88,19 @@ export default function LoginForm({ onSwitchMode }: LoginFormProps) {
                         <button
                             type="button"
                             onClick={() => setShowPassword((p) => !p)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer border-none bg-transparent p-0 text-[var(--body-subtle)] transition-colors hover:text-[var(--heading)]"
+                            className="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer border-none bg-transparent p-0 text-[var(--body-subtle)] transition-colors hover:text-[var(--heading)]"
                             tabIndex={-1}
-                            aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+                            aria-label={
+                                showPassword
+                                    ? 'Sembunyikan kata sandi'
+                                    : 'Tampilkan kata sandi'
+                            }
                         >
-                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            {showPassword ? (
+                                <EyeOff size={18} />
+                            ) : (
+                                <Eye size={18} />
+                            )}
                         </button>
                     </div>
                     <div className="mt-1.5 min-h-[1em]">

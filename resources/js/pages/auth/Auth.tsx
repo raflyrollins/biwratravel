@@ -23,7 +23,9 @@ const TRANSITION = {
 };
 
 export default function Auth({ mode: initialMode }: AuthProps) {
-    const [localMode, setLocalMode] = useState<'login' | 'register'>(initialMode);
+    const [localMode, setLocalMode] = useState<'login' | 'register'>(
+        initialMode,
+    );
     const isLogin = localMode === 'login';
     const imgSrc = isLogin ? LOGIN_IMG : REGISTER_IMG;
 
@@ -65,14 +67,14 @@ export default function Auth({ mode: initialMode }: AuthProps) {
                 {/* Back to home */}
                 <Link
                     href="/"
-                    className="absolute left-6 top-6 z-20 inline-flex items-center gap-1.5 text-sm text-[var(--body-subtle)] no-underline transition-colors hover:text-[var(--heading)]"
+                    className="absolute top-6 left-6 z-20 inline-flex items-center gap-1.5 text-sm text-[var(--body-subtle)] no-underline transition-colors hover:text-[var(--heading)]"
                 >
                     <ArrowLeft size={16} />
                     Kembali
                 </Link>
 
                 {/* ── Mobile: stacked ── */}
-                <div className="flex w-full max-w-md flex-col overflow-y-auto border border-[var(--border-default)] bg-[var(--neutral-primary)] shadow-xl dark:border-white/10 dark:bg-white/5 dark:backdrop-blur-sm md:hidden">
+                <div className="flex w-full max-w-md flex-col overflow-y-auto border border-[var(--border-default)] bg-[var(--neutral-primary)] shadow-xl md:hidden dark:border-white/10 dark:bg-white/5 dark:backdrop-blur-sm">
                     <div
                         className="relative aspect-[16/9] bg-cover bg-center"
                         style={{ backgroundImage: `url(${imgSrc})` }}
@@ -109,12 +111,16 @@ export default function Auth({ mode: initialMode }: AuthProps) {
                 </div>
 
                 {/* ── Desktop: animated panels ── */}
-                <div className="hidden overflow-x-hidden md:flex md:w-full md:max-w-[900px] md:h-[560px] md:border md:shadow-xl md:[border-color:var(--border-default)] md:bg-[var(--neutral-primary)] dark:md:border-white/10 dark:md:bg-white/5 dark:md:backdrop-blur-sm">
+                <div className="hidden overflow-x-hidden md:flex md:h-[560px] md:w-full md:max-w-[900px] md:border md:[border-color:var(--border-default)] md:bg-[var(--neutral-primary)] md:shadow-xl dark:md:border-white/10 dark:md:bg-white/5 dark:md:backdrop-blur-sm">
                     {/* ── Left panel ── */}
                     <div className="relative w-1/2">
                         <AnimatePresence initial={false}>
                             <motion.div
-                                key={isLogin ? 'panel-left-image' : 'panel-left-form'}
+                                key={
+                                    isLogin
+                                        ? 'panel-left-image'
+                                        : 'panel-left-form'
+                                }
                                 variants={leftVariants}
                                 initial="enter"
                                 animate="center"
@@ -152,7 +158,11 @@ export default function Auth({ mode: initialMode }: AuthProps) {
                     <div className="relative w-1/2">
                         <AnimatePresence initial={false}>
                             <motion.div
-                                key={isLogin ? 'panel-right-form' : 'panel-right-image'}
+                                key={
+                                    isLogin
+                                        ? 'panel-right-form'
+                                        : 'panel-right-image'
+                                }
                                 variants={rightVariants}
                                 initial="enter"
                                 animate="center"
