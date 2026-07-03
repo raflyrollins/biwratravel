@@ -126,11 +126,13 @@ class BookingFlowController extends Controller
         ]);
 
         foreach ($validated['passengers'] as $p) {
+            $birthDate = \Carbon\Carbon::parse($p['birth_date'])->format('Y-m-d');
+
             $booking->passengers()->create([
                 'nik' => $p['nik'],
                 'name' => $p['name'],
                 'gender' => $p['gender'],
-                'birth_date' => $p['birth_date'],
+                'birth_date' => $birthDate,
             ]);
 
             if ($request->user()) {
@@ -139,7 +141,7 @@ class BookingFlowController extends Controller
                     [
                         'name' => $p['name'],
                         'gender' => $p['gender'],
-                        'birth_date' => $p['birth_date'],
+                        'birth_date' => $birthDate,
                     ],
                 );
             }

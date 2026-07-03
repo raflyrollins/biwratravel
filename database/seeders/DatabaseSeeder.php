@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Enums\UserRole;
 use App\Models\Bus;
 use App\Models\City;
+use App\Models\Loket;
 use App\Models\Route;
 use App\Models\Segment;
 use App\Models\Trip;
@@ -60,6 +61,14 @@ class DatabaseSeeder extends Seeder
         $kualanamu = City::create(['name' => 'Kualanamu', 'slug' => 'kualanamu']);
         $tebingTinggi = City::create(['name' => 'Tebing Tinggi', 'slug' => 'tebing-tinggi']);
         $kisaran = City::create(['name' => 'Kisaran', 'slug' => 'kisaran']);
+
+        // ── Seed sample lokets ──
+        $loket1 = Loket::create(['name' => 'Loket Medan Pusat', 'city_id' => $medan->id, 'address' => 'Jl. Stasiun No. 1, Medan']);
+        $loket2 = Loket::create(['name' => 'Loket Binjai', 'city_id' => $binjai->id, 'address' => 'Jl. Merdeka No. 10, Binjai']);
+        $loket3 = Loket::create(['name' => 'Loket Kualanamu', 'city_id' => $kualanamu->id, 'address' => 'Bandara Kualanamu, Deli Serdang']);
+
+        // Assign petugas loket to loket
+        User::where('email', 'loket@biwratravel.com')->update(['loket_id' => $loket1->id]);
 
         // ── Seed sample buses ──
         $busA = Bus::create(['plate_number' => 'BK 1234 AB', 'name' => 'Budi Jaya', 'capacity' => 60]);

@@ -300,14 +300,20 @@ return;
                                             {p.name}
                                         </td>
                                         <td className="px-4 py-3 text-[var(--body)]">
-                                            {p.gender === 'male'
+                                            {p.gender === 'L'
                                                 ? 'Laki-laki'
-                                                : p.gender === 'female'
+                                                : p.gender === 'P'
                                                   ? 'Perempuan'
                                                   : '-'}
                                         </td>
                                         <td className="px-4 py-3 text-[var(--body)]">
-                                            {p.birth_date ?? '-'}
+                                            {p.birth_date
+                                                ? new Date(p.birth_date).toLocaleDateString('id-ID', {
+                                                      year: 'numeric',
+                                                      month: 'long',
+                                                      day: 'numeric',
+                                                  })
+                                                : '-'}
                                         </td>
                                         <td className="px-4 py-3 text-[var(--body)]">
                                             {p.seat_number ?? '-'}

@@ -23,7 +23,7 @@ class BookingPassenger extends Model
     protected function casts(): array
     {
         return [
-            'birth_date' => 'date:Y-m-d',
+            'birth_date' => 'date',
         ];
     }
 

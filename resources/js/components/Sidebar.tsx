@@ -1,6 +1,7 @@
 import { Link, usePage } from '@inertiajs/react';
 import {
     Bus,
+    Building2,
     Calendar,
     ChartNoAxesColumn,
     LayoutDashboard,
@@ -49,6 +50,8 @@ const ALL_MENUS: MenuGroup[] = [
             { label: 'Armada', href: '/dashboard/buses', icon: Bus },
             { label: 'Rute', href: '/dashboard/routes', icon: Map },
             { label: 'Jadwal', href: '/dashboard/trips', icon: Calendar },
+            { label: 'Loket', href: '/dashboard/lokets', icon: Building2 },
+            { label: 'Pengguna', href: '/dashboard/users', icon: Users },
         ],
     },
     {
@@ -73,7 +76,6 @@ const ALL_MENUS: MenuGroup[] = [
     {
         label: 'Lainnya',
         items: [
-            { label: 'Pengguna', href: '/dashboard/users', icon: Users },
             {
                 label: 'Laporan',
                 href: '/dashboard/reports',

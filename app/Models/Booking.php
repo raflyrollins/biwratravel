@@ -26,6 +26,7 @@ class Booking extends Model
         'status',
         'source',
         'notes',
+        'loket_id',
     ];
 
     public function getRouteKeyName(): string
@@ -51,6 +52,12 @@ class Booking extends Model
     public function trip(): BelongsTo
     {
         return $this->belongsTo(Trip::class);
+    }
+
+    /** @return BelongsTo<Loket, $this> */
+    public function loket(): BelongsTo
+    {
+        return $this->belongsTo(Loket::class);
     }
 
     /** @return BelongsTo<City, $this> */

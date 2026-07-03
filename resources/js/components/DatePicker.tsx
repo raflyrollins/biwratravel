@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 interface DatePickerProps {
     value: string;
@@ -47,7 +47,11 @@ export default function DatePicker({
     const triggerRef = useRef<HTMLButtonElement>(null);
     const panelRef = useRef<HTMLDivElement>(null);
     const today = useMemo(() => new Date(), []);
-    const selectedDate = value ? new Date(value + 'T00:00:00') : null;
+    const selectedDate = useMemo(() => {
+        if (!value) return null;
+        const d = value.includes('T') ? new Date(value) : new Date(value + 'T00:00:00');
+        return isNaN(d.getTime()) ? null : d;
+    }, [value]);
     const [viewMonth, setViewMonth] = useState(
         selectedDate?.getMonth() ?? today.getMonth(),
     );
@@ -57,6 +61,15 @@ export default function DatePicker({
     const [decadeStart, setDecadeStart] = useState(
         Math.floor((selectedDate?.getFullYear() ?? today.getFullYear()) / DECADE_SIZE) * DECADE_SIZE,
     );
+
+    useEffect(() => {
+        if (!selectedDate) return;
+        setViewMonth(selectedDate.getMonth());
+        setViewYear(selectedDate.getFullYear());
+        setDecadeStart(
+            Math.floor(selectedDate.getFullYear() / DECADE_SIZE) * DECADE_SIZE,
+        );
+    }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const decadeYears = useMemo(() => {
         const y: number[] = [];

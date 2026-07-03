@@ -79,7 +79,10 @@ export default function BookingPayment({
 
     const [timeLeft, setTimeLeft] = useState('');
     const [expired, setExpired] = useState(false);
+    const MAX_SIZE_MB = 2;
+    const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
     const [file, setFile] = useState<File | null>(null);
+    const [fileError, setFileError] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const fileRef = useRef<HTMLInputElement>(null);
 
@@ -109,7 +112,16 @@ export default function BookingPayment({
 
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
         const f = e.target.files?.[0];
-        if (f) setFile(f);
+        if (f) {
+            if (f.size > MAX_SIZE_BYTES) {
+                setFileError(`Ukuran file maksimal ${MAX_SIZE_MB}MB`);
+                setFile(null);
+                if (fileRef.current) fileRef.current.value = '';
+                return;
+            }
+            setFileError('');
+            setFile(f);
+        }
     }
 
     function handleSubmit(e: React.FormEvent) {
@@ -284,6 +296,11 @@ export default function BookingPayment({
                                     required
                                     className="focus:ring-[var(--brand)] block w-full text-sm text-[var(--body)] file:mr-3 file:cursor-pointer file:rounded-none file:border-0 file:bg-[var(--brand)] file:px-4 file:py-2 file:text-sm file:font-medium file:text-[var(--on-brand)] hover:file:bg-[var(--brand-strong)]"
                                 />
+                                {fileError && (
+                                    <p className="mt-1 text-xs text-[var(--fg-danger)]">
+                                        {fileError}
+                                    </p>
+                                )}
                                 {errors.proof_image && (
                                     <p className="mt-1 text-xs text-[var(--fg-danger)]">
                                         {errors.proof_image}

@@ -6,10 +6,12 @@ use App\Http\Controllers\BookingFlowController;
 use App\Http\Controllers\BusController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LoketController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RouteController;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\TripSearchController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
@@ -70,6 +72,24 @@ Route::middleware('auth')->prefix('dashboard')->name('dashboard.')->group(functi
             'edit' => 'trips.edit',
             'update' => 'trips.update',
             'destroy' => 'trips.destroy',
+        ]);
+
+        Route::resource('lokets', LoketController::class)->names([
+            'index' => 'lokets.index',
+            'create' => 'lokets.create',
+            'store' => 'lokets.store',
+            'edit' => 'lokets.edit',
+            'update' => 'lokets.update',
+            'destroy' => 'lokets.destroy',
+        ]);
+
+        Route::resource('users', UserController::class)->names([
+            'index' => 'users.index',
+            'create' => 'users.create',
+            'store' => 'users.store',
+            'edit' => 'users.edit',
+            'update' => 'users.update',
+            'destroy' => 'users.destroy',
         ]);
     });
 
