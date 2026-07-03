@@ -7,14 +7,12 @@ use App\Models\Bus;
 use App\Models\City;
 use App\Models\Route;
 use App\Models\Segment;
+use App\Models\Trip;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     public function run(): void
     {
         User::factory()->create([
@@ -90,5 +88,13 @@ class DatabaseSeeder extends Seeder
         Segment::create(['route_id' => $route2->id, 'origin_city_id' => $medan->id, 'destination_city_id' => $kualanamu->id, 'order' => 1, 'base_price' => 20000]);
         Segment::create(['route_id' => $route2->id, 'origin_city_id' => $kualanamu->id, 'destination_city_id' => $tebingTinggi->id, 'order' => 2, 'base_price' => 25000]);
         Segment::create(['route_id' => $route2->id, 'origin_city_id' => $tebingTinggi->id, 'destination_city_id' => $kisaran->id, 'order' => 3, 'base_price' => 18000]);
+
+        // ── Seed sample trips ──
+        Trip::create(['route_id' => $route1->id, 'bus_id' => $busA->id, 'departure_date' => today(), 'departure_time' => '08:00', 'estimated_arrival' => '10:30']);
+        Trip::create(['route_id' => $route1->id, 'bus_id' => $busA->id, 'departure_date' => today(), 'departure_time' => '14:00', 'estimated_arrival' => '16:30']);
+        Trip::create(['route_id' => $route1->id, 'bus_id' => $busA->id, 'departure_date' => today()->addDay(), 'departure_time' => '08:00', 'estimated_arrival' => '10:30']);
+        Trip::create(['route_id' => $route2->id, 'bus_id' => $busB->id, 'departure_date' => today(), 'departure_time' => '09:00', 'estimated_arrival' => '12:00']);
+        Trip::create(['route_id' => $route2->id, 'bus_id' => $busB->id, 'departure_date' => today(), 'departure_time' => '15:00', 'estimated_arrival' => '18:00']);
+        Trip::create(['route_id' => $route2->id, 'bus_id' => $busB->id, 'departure_date' => today()->addDay(), 'departure_time' => '09:00', 'estimated_arrival' => '12:00']);
     }
 }

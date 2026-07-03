@@ -7,9 +7,12 @@ import {
     Map,
     MapPin,
     Menu,
+    Search,
+    ShoppingBag,
     Ticket,
     Truck,
     Users,
+    Wallet,
     X,
 } from 'lucide-react';
 import { useMemo } from 'react';
@@ -52,7 +55,19 @@ const ALL_MENUS: MenuGroup[] = [
         label: 'Transaksi',
         items: [
             { label: 'Booking', href: '/dashboard/bookings', icon: Ticket },
+            { label: 'Pembayaran', href: '/dashboard/payments', icon: Wallet },
             { label: 'Charter', href: '/dashboard/charters', icon: Truck },
+        ],
+    },
+    {
+        label: 'Customer',
+        items: [
+            { label: 'Cari Tiket', href: '/dashboard/customer/search', icon: Search },
+            {
+                label: 'Pemesanan Saya',
+                href: '/dashboard/customer/bookings',
+                icon: ShoppingBag,
+            },
         ],
     },
     {
@@ -74,7 +89,7 @@ const ROLE_MENUS: Record<UserRole, string[]> = {
     admin_charter: ['Umum'],
     driver: ['Umum'],
     petugas_loket: ['Umum', 'Transaksi'],
-    customer: ['Umum'],
+    customer: ['Umum', 'Customer'],
 };
 
 const ROLE_LABELS: Record<UserRole, string> = {
@@ -147,7 +162,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                                 {group.items.map((item) => {
                                     const isActive =
                                         url === item.href ||
-                                        url.startsWith(item.href + '/');
+                                        (item.href !== '/dashboard' && url.startsWith(item.href + '/'));
                                     const Icon = item.icon;
 
                                     return (

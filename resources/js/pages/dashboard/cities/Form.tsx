@@ -6,6 +6,7 @@ import DashboardLayout from '@/components/DashboardLayout';
 
 interface City {
     id: number;
+    uuid: string;
     name: string;
     is_active: boolean;
 }
@@ -25,7 +26,7 @@ export default function CitiesForm({ city }: CitiesFormProps) {
         e.preventDefault();
 
         if (editing) {
-            put(`/dashboard/cities/${city.id}`);
+            put(`/dashboard/cities/${city.uuid}`);
         } else {
             post('/dashboard/cities');
         }

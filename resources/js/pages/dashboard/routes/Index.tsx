@@ -1,6 +1,8 @@
 import { Link, router } from '@inertiajs/react';
 import { Map, Plus, Pencil, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
+import ConfirmDialog from '@/components/ConfirmDialog';
 import DashboardLayout from '@/components/DashboardLayout';
 
 interface Segment {
@@ -15,6 +17,7 @@ interface Segment {
 
 interface Route {
     id: number;
+    uuid: string;
     name: string;
     is_active: boolean;
     bus: { id: number; name: string; plate_number: string };
@@ -36,9 +39,12 @@ interface RoutesIndexProps {
 }
 
 export default function RoutesIndex({ routes }: RoutesIndexProps) {
-    function deleteRoute(route: Route) {
-        if (confirm(`Hapus rute "${route.name}"?`)) {
-            router.delete(`/dashboard/routes/${route.id}`);
+    const [deleteTarget, setDeleteTarget] = useState<Route | null>(null);
+
+    function confirmDelete() {
+        if (deleteTarget) {
+            router.delete(`/dashboard/routes/${deleteTarget.uuid}`);
+            setDeleteTarget(null);
         }
     }
 
@@ -97,7 +103,7 @@ export default function RoutesIndex({ routes }: RoutesIndexProps) {
                             </div>
                             <div className="flex gap-2">
                                 <Link
-                                    href={`/dashboard/routes/${route.id}/edit`}
+                                    href={`/dashboard/routes/${route.uuid}/edit`}
                                     className="inline-flex items-center gap-1 border border-[var(--border-default)] px-3 py-1.5 text-xs font-medium text-[var(--body)] no-underline transition-colors hover:bg-[var(--neutral-tertiary-soft)]"
                                 >
                                     <Pencil size={14} />
@@ -105,7 +111,7 @@ export default function RoutesIndex({ routes }: RoutesIndexProps) {
                                 </Link>
                                 <button
                                     type="button"
-                                    onClick={() => deleteRoute(route)}
+                                    onClick={() => setDeleteTarget(route)}
                                     className="inline-flex cursor-pointer items-center gap-1 border border-[var(--border-danger-subtle)] px-3 py-1.5 text-xs font-medium text-[var(--fg-danger)] transition-colors hover:bg-[var(--danger-soft)]"
                                 >
                                     <Trash2 size={14} />
@@ -139,6 +145,17 @@ export default function RoutesIndex({ routes }: RoutesIndexProps) {
                     </div>
                 ))}
             </div>
+
+            <ConfirmDialog
+                open={deleteTarget !== null}
+                title="Hapus Rute"
+                message={`Yakin ingin menghapus rute "${deleteTarget?.name}"? Tindakan ini tidak dapat dibatalkan.`}
+                confirmLabel="Hapus"
+                cancelLabel="Batal"
+                variant="danger"
+                onConfirm={confirmDelete}
+                onCancel={() => setDeleteTarget(null)}
+            />
 
             {routes.last_page > 1 && (
                 <div className="mt-6 flex items-center justify-center gap-2">

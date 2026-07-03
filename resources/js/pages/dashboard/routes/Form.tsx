@@ -25,6 +25,7 @@ interface Segment {
 
 interface RouteData {
     id: number;
+    uuid: string;
     bus_id: number;
     name: string;
     origin_city_id: number;
@@ -67,8 +68,8 @@ export default function RoutesForm({ route, buses, cities }: RoutesFormProps) {
 
         if (editing) {
             put(
-                `/dashboard/routes/${route.id}`,
-                payload as unknown as Record<string, unknown>,
+                `/dashboard/routes/${route.uuid}`,
+                setData('_method', 'PUT') as unknown as Record<string, unknown>,
             );
         } else {
             post(
@@ -287,13 +288,18 @@ export default function RoutesForm({ route, buses, cities }: RoutesFormProps) {
                                         Harga (Rp)
                                     </label>
                                     <input
-                                        type="number"
-                                        value={segment.base_price}
+                                        type="text"
+                                        inputMode="numeric"
+                                        value={segment.base_price || ''}
+                                        onInput={(e) => {
+                                            const el = e.currentTarget;
+                                            el.value = el.value.replace(/\D/g, '');
+                                        }}
                                         onChange={(e) =>
                                             updateSegment(
                                                 index,
                                                 'base_price',
-                                                Number(e.target.value),
+                                                Number(e.target.value.replace(/\D/g, '')),
                                             )
                                         }
                                         className="w-full border border-[var(--border-default)] bg-[var(--neutral-tertiary)] px-3 py-2.5 text-sm text-[var(--heading)] focus:border-[var(--brand)] focus:ring-1 focus:ring-[var(--brand)] focus:outline-none dark:bg-white/10"

@@ -6,6 +6,7 @@ import DashboardLayout from '@/components/DashboardLayout';
 
 interface Bus {
     id: number;
+    uuid: string;
     plate_number: string;
     name: string;
     capacity: number;
@@ -29,7 +30,7 @@ export default function BusesForm({ bus }: BusesFormProps) {
         e.preventDefault();
 
         if (editing) {
-            put(`/dashboard/buses/${bus.id}`);
+            put(`/dashboard/buses/${bus.uuid}`);
         } else {
             post('/dashboard/buses');
         }
@@ -117,10 +118,15 @@ export default function BusesForm({ bus }: BusesFormProps) {
                     </label>
                     <input
                         id="capacity"
-                        type="number"
-                        value={data.capacity}
+                        type="text"
+                        inputMode="numeric"
+                        value={data.capacity || ''}
+                        onInput={(e) => {
+                            const el = e.currentTarget;
+                            el.value = el.value.replace(/\D/g, '');
+                        }}
                         onChange={(e) =>
-                            setData('capacity', Number(e.target.value))
+                            setData('capacity', Number(e.target.value.replace(/\D/g, '')))
                         }
                         className={`block w-full border bg-[var(--neutral-tertiary)] px-4 py-3 text-sm text-[var(--heading)] placeholder-[var(--body-subtle)] transition-all duration-200 focus:outline-none dark:bg-white/10 ${
                             errors.capacity

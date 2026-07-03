@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Segment extends Model
 {
+    use HasUuid;
+
     protected $fillable = [
+        'uuid',
         'route_id',
         'origin_city_id',
         'destination_city_id',

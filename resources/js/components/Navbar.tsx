@@ -5,7 +5,8 @@ import ThemeToggle from '@/components/ThemeToggle';
 import type { Auth } from '@/types';
 
 const links = [
-    { href: '#beranda', label: 'Beranda' },
+    { href: '/', label: 'Beranda' },
+    { href: '/dashboard/customer/search', label: 'Cari Tiket' },
     { href: '#fitur', label: 'Fitur' },
     { href: '#cara-pesan', label: 'Cara Pesan' },
     { href: '#kontak', label: 'Kontak' },

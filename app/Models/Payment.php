@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Payment extends Model
 {
+    use HasUuid;
+
     protected $fillable = [
+        'uuid',
         'booking_id',
         'amount',
         'method',
@@ -17,6 +21,11 @@ class Payment extends Model
         'validated_at',
         'notes',
     ];
+
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 
     protected function casts(): array
     {

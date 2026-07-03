@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Booking extends Model
 {
+    use HasUuid;
+
     protected $fillable = [
+        'uuid',
         'booking_code',
         'user_id',
         'trip_id',
@@ -23,6 +27,11 @@ class Booking extends Model
         'source',
         'notes',
     ];
+
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 
     protected function casts(): array
     {

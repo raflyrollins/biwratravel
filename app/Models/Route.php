@@ -2,19 +2,28 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Route extends Model
 {
+    use HasUuid;
+
     protected $fillable = [
+        'uuid',
         'bus_id',
         'name',
         'origin_city_id',
         'destination_city_id',
         'is_active',
     ];
+
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 
     protected function casts(): array
     {

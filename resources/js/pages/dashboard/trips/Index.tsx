@@ -1,10 +1,13 @@
 import { Link, router } from '@inertiajs/react';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
+import ConfirmDialog from '@/components/ConfirmDialog';
 import DashboardLayout from '@/components/DashboardLayout';
 
 interface Trip {
     id: number;
+    uuid: string;
     departure_date: string;
     departure_time: string;
     estimated_arrival: string | null;
@@ -30,9 +33,12 @@ interface TripsIndexProps {
 }
 
 export default function TripsIndex({ trips }: TripsIndexProps) {
-    function deleteTrip(trip: Trip) {
-        if (confirm(`Hapus jadwal ini?`)) {
-            router.delete(`/dashboard/trips/${trip.id}`);
+    const [deleteTarget, setDeleteTarget] = useState<Trip | null>(null);
+
+    function confirmDelete() {
+        if (deleteTarget) {
+            router.delete(`/dashboard/trips/${deleteTarget.uuid}`);
+            setDeleteTarget(null);
         }
     }
 
@@ -128,7 +134,7 @@ export default function TripsIndex({ trips }: TripsIndexProps) {
                                 <td className="px-6 py-4">
                                     <div className="flex gap-2">
                                         <Link
-                                            href={`/dashboard/trips/${trip.id}/edit`}
+                                            href={`/dashboard/trips/${trip.uuid}/edit`}
                                             className="inline-flex items-center gap-1 border border-[var(--border-default)] px-3 py-1.5 text-xs font-medium text-[var(--body)] no-underline transition-colors hover:bg-[var(--neutral-tertiary-soft)]"
                                         >
                                             <Pencil size={14} />
@@ -136,7 +142,7 @@ export default function TripsIndex({ trips }: TripsIndexProps) {
                                         </Link>
                                         <button
                                             type="button"
-                                            onClick={() => deleteTrip(trip)}
+                                            onClick={() => setDeleteTarget(trip)}
                                             className="inline-flex cursor-pointer items-center gap-1 border border-[var(--border-danger-subtle)] px-3 py-1.5 text-xs font-medium text-[var(--fg-danger)] transition-colors hover:bg-[var(--danger-soft)]"
                                         >
                                             <Trash2 size={14} />
@@ -149,6 +155,17 @@ export default function TripsIndex({ trips }: TripsIndexProps) {
                     </tbody>
                 </table>
             </div>
+
+            <ConfirmDialog
+                open={deleteTarget !== null}
+                title="Hapus Jadwal"
+                message={`Yakin ingin menghapus jadwal ini? Tindakan ini tidak dapat dibatalkan.`}
+                confirmLabel="Hapus"
+                cancelLabel="Batal"
+                variant="danger"
+                onConfirm={confirmDelete}
+                onCancel={() => setDeleteTarget(null)}
+            />
 
             {trips.last_page > 1 && (
                 <div className="mt-6 flex items-center justify-center gap-2">

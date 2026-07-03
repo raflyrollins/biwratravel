@@ -2,17 +2,26 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Bus extends Model
 {
+    use HasUuid;
+
     protected $fillable = [
+        'uuid',
         'plate_number',
         'name',
         'capacity',
         'is_active',
     ];
+
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 
     protected function casts(): array
     {

@@ -22,6 +22,7 @@ interface Route {
 
 interface TripData {
     id: number;
+    uuid: string;
     route_id: number;
     bus_id: number;
     departure_date: string;
@@ -51,7 +52,7 @@ export default function TripsForm({ trip, routes, buses }: TripsFormProps) {
         e.preventDefault();
 
         if (editing) {
-            put(`/dashboard/trips/${trip.id}`);
+            put(`/dashboard/trips/${trip.uuid}`);
         } else {
             post('/dashboard/trips');
         }

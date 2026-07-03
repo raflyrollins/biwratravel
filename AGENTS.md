@@ -19,16 +19,7 @@ PHP CS fixer: Pint (Laravel preset). JS formatter: Prettier + Tailwind plugin. J
 
 ## Architecture
 
-- **Entrypoint**: `routes/web.php` (single Inertia route → `welcome`) + `resources/js/app.tsx` (`createInertiaApp`)
-- **Frontend pages**: `resources/js/pages/` (currently only `welcome.tsx`)
-- **Backend**: `app/Http/Controllers/`, `app/Models/` (only `User` exists), `app/Providers/`
-- **Path alias**: `@/*` → `resources/js/*` (tsconfig, ESLint resolver)
-- **No domain models exist yet** — only default Laravel users/cache/jobs migrations
-- **DB**: MySQL (local, `biwratravel` DB), SQLite (`:memory:` in tests via phpunit.xml)
-
-## Architecture
-
-- **Entrypoint**: `routes/web.php` + `resources/js/app.tsx`
+- **Entrypoint**: `routes/web.php` + `resources/js/app.tsx` (`createInertiaApp`)
 - **Frontend pages**: `resources/js/pages/`
 - **Backend**: `app/Http/Controllers/`, `app/Models/`
 - **Path alias**: `@/*` → `resources/js/*`
@@ -172,8 +163,70 @@ Workflows: `lint.yml` (push/PR to develop/main/master) + `tests.yml` (matrix PHP
 5. **Sidebar type error**: `usePage()` returns `url` at top level, not in `props` — destructured separately.
 6. **Sidebar useMemo deps**: `allowedGroups` moved inside the memo callback to prevent re-render loops.
 
+### Pages built — Session 3
+
+| File | What |
+|---|---|
+| `app/Http/Controllers/BookingController.php` | List bookings with filters (status, source, date), show detail, destroy |
+| `app/Http/Controllers/PaymentController.php` | List payments (default pending), approve/reject with notes |
+| `resources/js/pages/dashboard/bookings/Index.tsx` | Booking list with filter panel (status, source, date range), pagination, status badges |
+| `resources/js/pages/dashboard/bookings/Show.tsx` | Booking detail: customer info, trip info, passengers table, payment timeline with approve/reject inline |
+| `resources/js/pages/dashboard/payments/Index.tsx` | Payment list with status tabs (pending/approved/rejected), inline approve/reject with notes input |
+| `resources/js/components/Sidebar.tsx` | Added "Pembayaran" link under Transaksi group |
+
+### Design decisions (Session 3)
+
+- **Booking filters**: Filter panel is collapsible via toggle button. Filters preserved across pagination via `withQueryString()`.
+- **Payment validation flow**: Approve + Reject actions available directly on both the Booking Show page (payment timeline) and the Payment Index list. Reject opens an inline textarea for optional notes.
+- **Booking status sync**: When a payment is approved, the parent booking status automatically updates to `confirmed` (in `PaymentController::approve()`).
+- **Route structure**: Booking uses resource routes (index, show, destroy). Payment uses custom POST routes (`{payment}/approve`, `{payment}/reject`) under a `payments` prefix.
+- **Menu visibility**: "Pembayaran" link appears for roles with "Transaksi" group access (superadmin, admin_penjualan, petugas_loket).
+
+### Bug fixes applied (Session 3)
+
+1. **AuthTest login redirect**: Test expected redirect to `home` but controller redirects to `dashboard.index` — updated test to match actual behavior.
+2. **Unused imports**: Removed unused `auth`/`usePage` in BookingIndex, removed unused `Clock` icon in BookingShow.
+
+### Pages built — Session 4
+
+| File | What |
+|---|---|
+| `resources/js/pages/dashboard/customer/BookingsIndex.tsx` | "Pemesanan Saya" — customer booking list with status badges, pagination, empty state |
+| `app/Console/Commands/CancelExpiredBookings.php` | Scheduler command: batch-update `awaiting_payment` bookings older than 30 min to `cancelled` |
+| `database/migrations/..._create_saved_passengers_table.php` | `saved_passengers` table (`user_id`, `nik`, `name`, `gender`, `birth_date`, unique per user+nik) |
+| `app/Models/SavedPassenger.php` | Model for saved passengers with `user()` BelongsTo |
+
+### Changes to existing files (Session 4)
+
+| File | What changed |
+|---|---|
+| `app/Http/Controllers/BookingFlowController.php` | Added `index()` (my bookings list), `cancel()` (with graceful non-422), `create()` now passes `saved_passengers`, `store()` auto-saves passengers via `updateOrCreate` |
+| `app/Models/User.php` | Added `savedPassengers()` HasMany relationship |
+| `routes/web.php` | Added `GET /bookings` → `index`, `POST /booking/{booking}/cancel` → `cancel` |
+| `routes/console.php` | Registered `bookings:cancel-expired` → `everyMinute()` |
+| `resources/js/components/DatePicker.tsx` | Added `className` prop on trigger button for custom styling |
+| `resources/js/pages/dashboard/customer/BookingCreate.tsx` | Added `saved_passengers` prop + dropdown "Penumpang Tersimpan" with auto-fill |
+| `resources/js/pages/dashboard/customer/BookingPayment.tsx` | Timer: removed frontend cancel POST, shows "Waktu habis" only. Backend scheduler handles cancel. Timer stops when `booking.status !== 'awaiting_payment'` |
+
+### Design decisions (Session 4)
+
+- **Cancel flow**: Frontend timer is purely a display. Cancel of expired bookings is handled exclusively by the backend scheduler (`bookings:cancel-expired`, every minute). Single batch `UPDATE` query — no loops, no JOINs, no overhead. This eliminates all race conditions between frontend/backend cancel requests.
+- **Cancel endpoint kept but graceful**: `POST /booking/{booking}/cancel` still exists for potential manual cancel button later. If booking is already in a final state, returns `->with('info')` instead of `abort(422)`.
+- **Saved passengers**: `updateOrCreate` by `['user_id', 'nik']` unique constraint. Auto-saved when a booking is created via `store()`. Pre-filled into the first empty passenger row when selected.
+- **My Bookings page**: Shows effective status (detects `pending` payment from `payments[]`). `awaiting_payment` bookings link directly to payment page.
+- **Timer server-side**: Deadline = `$booking->created_at->addMinutes(30)`, sent as ISO8601 string. Consistent across page refreshes since it derives from the DB `created_at` timestamp.
+
+### Bug fixes applied (Session 4)
+
+1. **DatePicker year-picker overflow**: Grid all years (1950-2036) overflowed container. Fixed: decade-based 4×3 grid (12 years/page), fixed height 216px, `«`/`»` navigation.
+2. **DatePicker flip flicker**: Dropdown appeared at bottom then flipped up. Fixed: pre-calculate position via `ESTIMATED_PANEL_HEIGHT` before `setOpen(true)`, so first render uses correct direction.
+3. **DatePicker alignment in form**: Birth date field had no label and different height compared to other inputs. Fixed: added matching label + `className` prop to match form input styles.
+4. **Pemesanan Saya menu not found**: Sidebar had menu entry but no route/page existed. Fixed: added controller method + route + page.
+
 ### Known issues
 
 - `bg-fixed` (`background-attachment: fixed`) ignored on iOS Safari; falls back to normal scroll. This is a WebKit limitation — no workaround without JS-based parallax.
 - Seeder account passwords all use `password` (from UserFactory default hash).
 - PHPStan times out in some environments (level 7 on M1/WSL2).
+- Payment proof image viewer links to `/storage/{proof_image}` — storage link must be configured (`php artisan storage:link`) for production.
+- `routes/Form.tsx:72` — pre-existing TypeScript error (arg type `"_method"` not assignable), unrelated to session 4.

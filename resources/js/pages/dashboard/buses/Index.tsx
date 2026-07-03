@@ -1,10 +1,13 @@
 import { Link, router } from '@inertiajs/react';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
+import ConfirmDialog from '@/components/ConfirmDialog';
 import DashboardLayout from '@/components/DashboardLayout';
 
 interface Bus {
     id: number;
+    uuid: string;
     plate_number: string;
     name: string;
     capacity: number;
@@ -25,9 +28,12 @@ interface BusesIndexProps {
 }
 
 export default function BusesIndex({ buses }: BusesIndexProps) {
-    function deleteBus(bus: Bus) {
-        if (confirm(`Hapus armada "${bus.name}"?`)) {
-            router.delete(`/dashboard/buses/${bus.id}`);
+    const [deleteTarget, setDeleteTarget] = useState<Bus | null>(null);
+
+    function confirmDelete() {
+        if (deleteTarget) {
+            router.delete(`/dashboard/buses/${deleteTarget.uuid}`);
+            setDeleteTarget(null);
         }
     }
 
@@ -117,7 +123,7 @@ export default function BusesIndex({ buses }: BusesIndexProps) {
                                 <td className="px-6 py-4">
                                     <div className="flex gap-2">
                                         <Link
-                                            href={`/dashboard/buses/${bus.id}/edit`}
+                                            href={`/dashboard/buses/${bus.uuid}/edit`}
                                             className="inline-flex items-center gap-1 border border-[var(--border-default)] px-3 py-1.5 text-xs font-medium text-[var(--body)] no-underline transition-colors hover:bg-[var(--neutral-tertiary-soft)]"
                                         >
                                             <Pencil size={14} />
@@ -125,7 +131,7 @@ export default function BusesIndex({ buses }: BusesIndexProps) {
                                         </Link>
                                         <button
                                             type="button"
-                                            onClick={() => deleteBus(bus)}
+                                            onClick={() => setDeleteTarget(bus)}
                                             className="inline-flex cursor-pointer items-center gap-1 border border-[var(--border-danger-subtle)] px-3 py-1.5 text-xs font-medium text-[var(--fg-danger)] transition-colors hover:bg-[var(--danger-soft)]"
                                         >
                                             <Trash2 size={14} />
@@ -138,6 +144,17 @@ export default function BusesIndex({ buses }: BusesIndexProps) {
                     </tbody>
                 </table>
             </div>
+
+            <ConfirmDialog
+                open={deleteTarget !== null}
+                title="Hapus Armada"
+                message={`Yakin ingin menghapus armada "${deleteTarget?.name}"? Tindakan ini tidak dapat dibatalkan.`}
+                confirmLabel="Hapus"
+                cancelLabel="Batal"
+                variant="danger"
+                onConfirm={confirmDelete}
+                onCancel={() => setDeleteTarget(null)}
+            />
 
             {buses.last_page > 1 && (
                 <div className="mt-6 flex items-center justify-center gap-2">

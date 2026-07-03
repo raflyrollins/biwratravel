@@ -2,12 +2,20 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class City extends Model
 {
-    protected $fillable = ['name', 'slug', 'is_active'];
+    use HasUuid;
+
+    protected $fillable = ['uuid', 'name', 'slug', 'is_active'];
+
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 
     protected function casts(): array
     {

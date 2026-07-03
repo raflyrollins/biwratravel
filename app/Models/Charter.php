@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Charter extends Model
 {
+    use HasUuid;
+
     protected $fillable = [
+        'uuid',
         'user_id',
         'charter_code',
         'customer_name',

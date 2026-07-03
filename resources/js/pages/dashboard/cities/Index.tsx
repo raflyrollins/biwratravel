@@ -1,10 +1,13 @@
 import { Link, router } from '@inertiajs/react';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
+import ConfirmDialog from '@/components/ConfirmDialog';
 import DashboardLayout from '@/components/DashboardLayout';
 
 interface City {
     id: number;
+    uuid: string;
     name: string;
     slug: string;
     is_active: boolean;
@@ -24,9 +27,12 @@ interface CitiesIndexProps {
 }
 
 export default function CitiesIndex({ cities }: CitiesIndexProps) {
-    function deleteCity(city: City) {
-        if (confirm(`Hapus kota "${city.name}"?`)) {
-            router.delete(`/dashboard/cities/${city.id}`);
+    const [deleteTarget, setDeleteTarget] = useState<City | null>(null);
+
+    function confirmDelete() {
+        if (deleteTarget) {
+            router.delete(`/dashboard/cities/${deleteTarget.uuid}`);
+            setDeleteTarget(null);
         }
     }
 
@@ -104,7 +110,7 @@ export default function CitiesIndex({ cities }: CitiesIndexProps) {
                                 <td className="px-6 py-4">
                                     <div className="flex gap-2">
                                         <Link
-                                            href={`/dashboard/cities/${city.id}/edit`}
+                                            href={`/dashboard/cities/${city.uuid}/edit`}
                                             className="inline-flex items-center gap-1 border border-[var(--border-default)] px-3 py-1.5 text-xs font-medium text-[var(--body)] no-underline transition-colors hover:bg-[var(--neutral-tertiary-soft)]"
                                         >
                                             <Pencil size={14} />
@@ -112,7 +118,7 @@ export default function CitiesIndex({ cities }: CitiesIndexProps) {
                                         </Link>
                                         <button
                                             type="button"
-                                            onClick={() => deleteCity(city)}
+                                            onClick={() => setDeleteTarget(city)}
                                             className="inline-flex cursor-pointer items-center gap-1 border border-[var(--border-danger-subtle)] px-3 py-1.5 text-xs font-medium text-[var(--fg-danger)] transition-colors hover:bg-[var(--danger-soft)]"
                                         >
                                             <Trash2 size={14} />
@@ -125,6 +131,17 @@ export default function CitiesIndex({ cities }: CitiesIndexProps) {
                     </tbody>
                 </table>
             </div>
+
+            <ConfirmDialog
+                open={deleteTarget !== null}
+                title="Hapus Kota"
+                message={`Yakin ingin menghapus kota "${deleteTarget?.name}"? Tindakan ini tidak dapat dibatalkan.`}
+                confirmLabel="Hapus"
+                cancelLabel="Batal"
+                variant="danger"
+                onConfirm={confirmDelete}
+                onCancel={() => setDeleteTarget(null)}
+            />
 
             {cities.last_page > 1 && (
                 <div className="mt-6 flex items-center justify-center gap-2">
