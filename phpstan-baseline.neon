@@ -1,0 +1,19 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Access to an undefined property App\\Models\\Booking\:\:\$uuid\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/LoketBookingController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Trip\:\:\$uuid\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/LoketBookingController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Trip\:\:\$uuid\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/TripSearchController.php

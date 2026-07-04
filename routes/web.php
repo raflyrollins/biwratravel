@@ -6,9 +6,12 @@ use App\Http\Controllers\BookingFlowController;
 use App\Http\Controllers\BusController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LoketBookingController;
 use App\Http\Controllers\LoketController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PrintTicketController;
 use App\Http\Controllers\RouteController;
+use App\Http\Controllers\SavedPassengerController;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\TripSearchController;
 use App\Http\Controllers\UserController;
@@ -34,6 +37,9 @@ Route::middleware('auth')->prefix('dashboard')->name('dashboard.')->group(functi
         Route::get('/booking/{booking}/payment', [BookingFlowController::class, 'payment'])->name('booking.payment');
         Route::post('/booking/{booking}/payment', [BookingFlowController::class, 'uploadProof'])->name('booking.payment.upload');
         Route::post('/booking/{booking}/cancel', [BookingFlowController::class, 'cancel'])->name('booking.cancel');
+        Route::get('/passengers', [SavedPassengerController::class, 'index'])->name('passengers.index');
+        Route::put('/passengers/{savedPassenger}', [SavedPassengerController::class, 'update'])->name('passengers.update');
+        Route::delete('/passengers/{savedPassenger}', [SavedPassengerController::class, 'destroy'])->name('passengers.destroy');
     });
     Route::get('/', [DashboardController::class, 'index'])->name('index');
 
@@ -93,7 +99,7 @@ Route::middleware('auth')->prefix('dashboard')->name('dashboard.')->group(functi
         ]);
     });
 
-    Route::middleware('role:superadmin,admin_penjualan,petugas_loket')->group(function () {
+    Route::middleware('role:superadmin,admin_penjualan')->group(function () {
         Route::resource('bookings', BookingController::class)->only([
             'index', 'show', 'destroy',
         ])->names([
@@ -101,6 +107,17 @@ Route::middleware('auth')->prefix('dashboard')->name('dashboard.')->group(functi
             'show' => 'bookings.show',
             'destroy' => 'bookings.destroy',
         ]);
+    });
+
+    Route::get('/booking/{booking}/print', [PrintTicketController::class, 'show'])->name('booking.print');
+
+    Route::middleware('role:petugas_loket')->prefix('loket')->name('loket.')->group(function () {
+        Route::get('/booking/search', [LoketBookingController::class, 'search'])->name('booking.search');
+        Route::get('/booking/trip/{trip}', [LoketBookingController::class, 'create'])->name('booking.create');
+        Route::post('/booking', [LoketBookingController::class, 'store'])->name('booking.store');
+        Route::get('/bookings', [LoketBookingController::class, 'index'])->name('bookings');
+        Route::get('/booking/lookup', [LoketBookingController::class, 'lookup'])->name('booking.lookup');
+        Route::get('/passenger/lookup/{nik}', [LoketBookingController::class, 'lookupPassenger'])->name('passenger.lookup');
     });
 
     Route::middleware('role:superadmin,admin_penjualan')->group(function () {

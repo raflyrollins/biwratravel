@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\Trip;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -83,6 +84,16 @@ class BookingFlowController extends Controller
             'passengers.*.name' => ['required', 'string', 'max:255'],
             'passengers.*.gender' => ['required', Rule::in(['L', 'P'])],
             'passengers.*.birth_date' => ['required', 'date'],
+        ], [
+            'passengers.required' => 'Minimal satu penumpang harus diisi.',
+            'passengers.min' => 'Minimal satu penumpang harus diisi.',
+            'passengers.*.nik.required' => 'NIK penumpang wajib diisi.',
+            'passengers.*.nik.size' => 'NIK harus 16 digit.',
+            'passengers.*.name.required' => 'Nama penumpang wajib diisi.',
+            'passengers.*.gender.required' => 'Jenis kelamin penumpang wajib dipilih.',
+            'passengers.*.gender.in' => 'Jenis kelamin tidak valid.',
+            'passengers.*.birth_date.required' => 'Tanggal lahir penumpang wajib diisi.',
+            'passengers.*.birth_date.date' => 'Format tanggal lahir tidak valid.',
         ]);
 
         $trip = Trip::with(['bus', 'route.segments'])->where('uuid', $validated['trip_id'])->firstOrFail();
@@ -126,7 +137,7 @@ class BookingFlowController extends Controller
         ]);
 
         foreach ($validated['passengers'] as $p) {
-            $birthDate = \Carbon\Carbon::parse($p['birth_date'])->format('Y-m-d');
+            $birthDate = Carbon::parse($p['birth_date'])->format('Y-m-d');
 
             $booking->passengers()->create([
                 'nik' => $p['nik'],

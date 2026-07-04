@@ -4,6 +4,7 @@ import {
     Building2,
     Calendar,
     ChartNoAxesColumn,
+    Contact,
     LayoutDashboard,
     Map,
     MapPin,
@@ -11,6 +12,7 @@ import {
     Search,
     ShoppingBag,
     Ticket,
+    TicketCheck,
     Truck,
     Users,
     Wallet,
@@ -71,6 +73,19 @@ const ALL_MENUS: MenuGroup[] = [
                 href: '/dashboard/customer/bookings',
                 icon: ShoppingBag,
             },
+            {
+                label: 'Data Penumpang',
+                href: '/dashboard/customer/passengers',
+                icon: Contact,
+            },
+        ],
+    },
+    {
+        label: 'Loket',
+        items: [
+            { label: 'Penjualan Tiket', href: '/dashboard/loket/booking/search', icon: Ticket },
+            { label: 'Riwayat Penerbitan', href: '/dashboard/loket/bookings', icon: TicketCheck },
+            { label: 'Cari Booking', href: '/dashboard/loket/booking/lookup', icon: Search },
         ],
     },
     {
@@ -90,7 +105,7 @@ const ROLE_MENUS: Record<UserRole, string[]> = {
     admin_penjualan: ['Umum', 'Transaksi'],
     admin_charter: ['Umum'],
     driver: ['Umum'],
-    petugas_loket: ['Umum', 'Transaksi'],
+    petugas_loket: ['Umum', 'Loket'],
     customer: ['Umum', 'Customer'],
 };
 

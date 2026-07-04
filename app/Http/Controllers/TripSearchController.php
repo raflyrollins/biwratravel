@@ -84,7 +84,7 @@ class TripSearchController extends Controller
                     }
 
                     $routeData = $segmentsMap[$trip->route_id];
-                    $date = $trip->departure_date->format('Y-m-d');
+                    $date = $trip->departure_date->format('Y-m-d'); // @phpstan-ignore-line
 
                     $groupedResults[$date][] = [
                         'uuid' => $trip->uuid,

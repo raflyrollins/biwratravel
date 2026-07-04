@@ -1,5 +1,5 @@
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Bus, Clock, MapPin, Route, Search as SearchIcon, Users } from 'lucide-react';
+import { Link, router } from '@inertiajs/react';
+import { Bus, Clock, Route, Search as SearchIcon, Users } from 'lucide-react';
 import { type FormEvent, useEffect, useState } from 'react';
 
 import Button from '@/components/Button';
@@ -26,7 +26,7 @@ interface TripResult {
     destination_id: number;
 }
 
-interface CustomerSearchProps {
+interface SearchProps {
     cities: City[];
     grouped_results: Record<string, TripResult[]>;
     filters: { origin?: string; destination?: string; date?: string };
@@ -59,12 +59,11 @@ function formatTabLabel(dateStr: string, count: number): string {
     return `${prefix} (${count})`;
 }
 
-export default function CustomerSearch({
+export default function LoketBookingSearch({
     cities,
     grouped_results,
     filters,
-}: CustomerSearchProps) {
-    const { auth } = usePage().props as { auth: { user: { name: string } } };
+}: SearchProps) {
     const [origin, setOrigin] = useState(filters.origin ?? '');
     const [destination, setDestination] = useState(filters.destination ?? '');
     const [date, setDate] = useState(filters.date ?? '');
@@ -75,7 +74,7 @@ export default function CustomerSearch({
     function handleSearch(e: FormEvent) {
         e.preventDefault();
         router.get(
-            '/dashboard/customer/search',
+            '/dashboard/loket/booking/search',
             { origin, destination, date },
             { preserveState: true },
         );
@@ -90,21 +89,20 @@ export default function CustomerSearch({
     const activeResults = activeTab ? grouped_results[activeTab] ?? [] : [];
 
     return (
-        <DashboardLayout>
-            <Head title="Cari Tiket" />
-
+        <DashboardLayout title="Penjualan Tiket">
             <div className="mx-auto max-w-4xl">
-                <h1 className="mb-2 text-xl font-bold text-[var(--heading)]">
-                    Cari Tiket Bus
-                </h1>
-                <p className="mb-6 text-sm text-[var(--body-subtle)]">
-                    Cari jadwal bus berdasarkan kota asal, tujuan, dan tanggal
-                    keberangkatan.
-                </p>
+                <div className="mb-6">
+                    <h1 className="text-2xl font-bold text-[var(--heading)]">
+                        Penjualan Tiket
+                    </h1>
+                    <p className="mt-1 text-sm text-[var(--body-subtle)]">
+                        Cari jadwal dan terbitkan tiket secara offline.
+                    </p>
+                </div>
 
                 <form
                     onSubmit={handleSearch}
-                    className="mb-8 flex flex-wrap items-end gap-3 rounded-none border border-[var(--border-default)] bg-[var(--neutral-primary)] p-4"
+                    className="mb-8 flex flex-wrap items-end gap-3 border border-[var(--border-default)] bg-[var(--neutral-primary)] p-4"
                 >
                     <div className="min-w-44 flex-1">
                         <SearchableSelect
@@ -157,7 +155,7 @@ export default function CustomerSearch({
                                 key={key}
                                 type="button"
                                 onClick={() => setActiveTab(key)}
-                                className={`cursor-pointer rounded-none border px-4 py-2 text-sm font-medium transition-colors ${
+                                className={`cursor-pointer border px-4 py-2 text-sm font-medium transition-colors ${
                                     activeTab === key
                                         ? 'border-[var(--brand)] bg-[var(--brand)] text-[var(--on-brand)]'
                                         : 'border-[var(--border-default)] bg-[var(--neutral-primary)] text-[var(--body)] hover:border-[var(--brand)] hover:text-[var(--fg-brand)]'
@@ -179,7 +177,7 @@ export default function CustomerSearch({
                         {activeResults.map((trip) => (
                             <div
                                 key={trip.uuid}
-                                className="flex flex-col gap-4 rounded-none border border-[var(--border-default)] bg-[var(--neutral-primary)] p-4 md:flex-row md:items-center md:justify-between"
+                                className="flex flex-col gap-4 border border-[var(--border-default)] bg-[var(--neutral-primary)] p-4 md:flex-row md:items-center md:justify-between"
                             >
                                 <div className="flex flex-1 flex-wrap items-center gap-x-5 gap-y-2">
                                     <div className="flex items-center gap-2">
@@ -221,10 +219,10 @@ export default function CustomerSearch({
                                         </p>
                                     </div>
                                     <Link
-                                        href={`/dashboard/customer/booking/trip/${trip.uuid}?origin=${trip.origin_id}&destination=${trip.destination_id}`}
+                                        href={`/dashboard/loket/booking/trip/${trip.uuid}?origin=${trip.origin_id}&destination=${trip.destination_id}`}
                                     >
                                         <Button variant="brand" size="default">
-                                            Pesan
+                                            Pilih
                                         </Button>
                                     </Link>
                                 </div>
@@ -235,7 +233,7 @@ export default function CustomerSearch({
 
                 {filters.origin && filters.destination && filters.date && dateKeys.length > 0 && activeResults.length === 0 && (
                     <div className="py-12 text-center">
-                        <MapPin className="mx-auto mb-3 h-8 w-8 text-[var(--body-subtle)]" />
+                        <Bus className="mx-auto mb-3 h-8 w-8 text-[var(--body-subtle)]" />
                         <p className="text-[var(--body-subtle)]">
                             Tidak ada jadwal tersedia untuk tanggal tersebut.
                         </p>
@@ -244,7 +242,7 @@ export default function CustomerSearch({
 
                 {filters.origin && filters.destination && filters.date && dateKeys.length === 0 && (
                     <div className="py-12 text-center">
-                        <MapPin className="mx-auto mb-3 h-8 w-8 text-[var(--body-subtle)]" />
+                        <Bus className="mx-auto mb-3 h-8 w-8 text-[var(--body-subtle)]" />
                         <p className="text-[var(--body-subtle)]">
                             Tidak ada jadwal tersedia untuk rute dan periode tersebut.
                         </p>
@@ -255,7 +253,7 @@ export default function CustomerSearch({
                     <div className="py-12 text-center">
                         <SearchIcon className="mx-auto mb-3 h-8 w-8 text-[var(--body-subtle)]" />
                         <p className="text-[var(--body-subtle)]">
-                            Pilih kota asal dan tujuan untuk mencari tiket.
+                            Pilih kota asal, tujuan, dan tanggal untuk mencari jadwal.
                         </p>
                     </div>
                 )}

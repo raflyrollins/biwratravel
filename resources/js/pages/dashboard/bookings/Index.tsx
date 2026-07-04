@@ -2,6 +2,7 @@ import { Link, router } from '@inertiajs/react';
 import { Eye, Filter, X } from 'lucide-react';
 import { useState } from 'react';
 
+import DatePicker from '@/components/DatePicker';
 import DashboardLayout from '@/components/DashboardLayout';
 
 interface Booking {
@@ -170,11 +171,10 @@ params.date_to = dateTo;
                             <label className="text-xs font-medium text-[var(--body-subtle)]">
                                 Dari Tanggal
                             </label>
-                            <input
-                                type="date"
+                            <DatePicker
                                 value={dateFrom}
-                                onChange={(e) => setDateFrom(e.target.value)}
-                                className="border border-[var(--border-default)] bg-[var(--neutral-primary)] px-3 py-2 text-sm text-[var(--body)] outline-none focus:border-[var(--brand)]"
+                                onChange={(v) => setDateFrom(v)}
+                                placeholder="Pilih tanggal"
                             />
                         </div>
 
@@ -182,11 +182,10 @@ params.date_to = dateTo;
                             <label className="text-xs font-medium text-[var(--body-subtle)]">
                                 Sampai Tanggal
                             </label>
-                            <input
-                                type="date"
+                            <DatePicker
                                 value={dateTo}
-                                onChange={(e) => setDateTo(e.target.value)}
-                                className="border border-[var(--border-default)] bg-[var(--neutral-primary)] px-3 py-2 text-sm text-[var(--body)] outline-none focus:border-[var(--brand)]"
+                                onChange={(v) => setDateTo(v)}
+                                placeholder="Pilih tanggal"
                             />
                         </div>
                     </div>

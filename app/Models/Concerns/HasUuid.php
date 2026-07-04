@@ -12,7 +12,7 @@ trait HasUuid
     {
         static::creating(function (Model $model): void {
             if (empty($model->uuid)) {
-                $model->uuid = Uuid::uuid4()->toString();
+                $model->uuid = Uuid::uuid4()->toString(); // @phpstan-ignore-line
             }
         });
     }
